@@ -112,6 +112,73 @@ cd ..\mysql_cms; npm run build
 
 Genera la carpeta `dist` de cada proyecto.
 
+<!-- PLUGINS:START -->
+## Plugins y extensiones
+
+### Extensiones de VS Code
+
+Para instalarlas todas de una vez:
+
+```powershell
+.\instalar_extensiones.ps1
+```
+
+Para instalar una sola: `code --install-extension ID`.
+
+**Necesarias para programar el proyecto (React):**
+
+| Extensión | ID | Versión |
+|---|---|---|
+| ES7+ React/Redux Snippets | `dsznajder.es7-react-js-snippets` | 4.4.3 |
+| Simple React Snippets | `burkeholland.simple-react-snippets` | 1.2.8 |
+| React Native Tools | `msjsdiag.vscode-react-native` | 1.13.0 |
+| gitignore | `codezombiech.gitignore` | 0.10.0 |
+| Start Git Bash | `mccarter.start-git-bash` | 1.2.1 |
+| Paquete de idioma español | `ms-ceintl.vscode-language-pack-es` | 1.131 |
+
+**Asistentes de IA (opcionales, piden su propia API key en cada PC):**
+
+| Extensión | ID | Versión |
+|---|---|---|
+| Claude Code | `anthropic.claude-code` | 2.1.312 |
+| Claude Code Extension (CodeFlow Studio) | `codeflow-studio.claude-code-extension` | 0.1.10 |
+| ChatGPT (OpenAI) | `openai.chatgpt` | 26.1021.22027 |
+| Codex Audio (OpenAI) | `openai.codex-audio` | 26.1021.22027 |
+| DeepSeek Code Generator | `daviddai.deepseek-code-generator` | 2.0.0 |
+| NVIDIA NIM Provider | `hidenobunagai.nvidia-nim-provider` | 0.3.8 |
+| ChatGPT (ikasann-self) | `ikasann-self.vscode-chat-gpt` | 1.2.0 |
+| Google Antigravity | `google.google-antigravity` | 1.10.0 |
+
+**Apariencia (opcionales):**
+
+| Extensión | ID | Versión |
+|---|---|---|
+| Material Icon Theme | `pkief.material-icon-theme` | 5.40.0 |
+| Doki Theme | `unthrottled.doki-theme` | 88.1.18 |
+| VSCode Pokemon | `jakobhoeg.vscode-pokemon` | 5.0.2 |
+
+> Las API keys de las extensiones de IA no viajan con el repositorio. Hay que ingresarlas de nuevo en cada PC.
+
+### Herramientas del sistema
+
+| Herramienta | Versión usada |
+|---|---|
+| Node.js | v24.14.0 |
+| npm | 11.9.0 |
+| Git | 2.53.0 |
+| XAMPP (MariaDB) | 10.4.32 |
+
+### Dependencias npm (se instalan solas con `npm install`)
+
+**backend:** express, cors, body-parser, dotenv, multer, mysql2, nodemon
+
+**Zoomtv2.0respaldo (web pública):** react 19, react-dom, react-router-dom, react-helmet, react-icons, axios, hls.js, prop-types, tailwindcss, @tailwindcss/vite, vite 7, @vitejs/plugin-react, eslint, postcss, autoprefixer
+
+**mysql_cms (dashboard):** react 19, react-dom, react-router-dom, @headlessui/react, framer-motion, lucide-react, typescript, typescript-eslint, vite 7, @vitejs/plugin-react, eslint
+
+La lista completa con versiones está en `PLUGINS.md`.
+<!-- PLUGINS:END -->
+
 ## Problemas frecuentes
 
 | Síntoma | Causa y solución |
