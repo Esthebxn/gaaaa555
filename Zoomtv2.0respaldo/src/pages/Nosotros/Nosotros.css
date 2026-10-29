@@ -1,20 +1,10 @@
 /* Nosotros.css */
 
-/* Estilos generales */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  line-height: 1.6;
-  color: #333;
-  background-color: #f8f9fa;
-}
+/* El reset y los colores globales se mantienen en index.css. */
 
 .nosotros-container {
+  width: 100%;
+  min-width: 0;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
@@ -265,6 +255,7 @@ body {
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   padding: 30px;
+  min-width: 0;
 }
 
 .nosotros-section.reverse {
@@ -273,6 +264,7 @@ body {
 
 .section-image {
   flex: 1;
+  min-width: 0;
   overflow: hidden;
   border-radius: 10px;
 }
@@ -291,6 +283,7 @@ body {
 
 .section-content {
   flex: 1;
+  min-width: 0;
   padding: 20px;
 }
 
@@ -350,6 +343,7 @@ body {
   text-decoration: none;
   transition: color 0.3s ease;
   font-weight: 500;
+  overflow-wrap: anywhere;
 }
 
 .contacto-section a:hover {
@@ -409,6 +403,16 @@ body {
   .nosotros-container {
     padding: 0 15px;
   }
+
+  .nosotros-header {
+    margin: 36px 0 28px;
+    padding: 0 8px;
+  }
+
+  .nosotros-header h2,
+  .equipo-section h2 {
+    font-size: 1.65rem;
+  }
   
   .nosotros-banner {
     padding: 40px 15px;
@@ -427,12 +431,48 @@ body {
   }
   
   .nosotros-section {
-    padding: 20px;
-    margin: 50px 0;
+    padding: 16px;
+    margin: 32px 0;
+    gap: 16px;
+  }
+
+  .section-image {
+    width: 100%;
+    max-height: 260px;
+  }
+
+  .section-image img {
+    display: block;
+    max-height: 260px;
+  }
+
+  .section-content {
+    padding: 8px 2px;
+  }
+
+  .section-content h2 {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+  }
+
+  .section-content p {
+    font-size: 0.98rem;
+    overflow-wrap: anywhere;
   }
   
   .contacto-section h2 {
     font-size: 1.8rem;
+  }
+
+  .contacto-section {
+    margin: 36px 0;
+    padding: 30px 16px;
+    overflow-wrap: anywhere;
+  }
+
+  .equipo-completo {
+    margin-top: 28px;
+    padding: 0;
   }
 }
 

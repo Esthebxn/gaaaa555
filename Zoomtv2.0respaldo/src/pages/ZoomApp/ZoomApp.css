@@ -4,23 +4,16 @@
    ============================================ */
 
 /* ========== RESET & BASE ========== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
+.zoom-app-container {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow: hidden;
 }
 
 /* ========== CONTENEDOR PRINCIPAL ========== */
 .zoom-app-container {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  min-height: calc(100vh - var(--header-height, 70px));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -703,8 +696,9 @@ body {
 /* ========== RESPONSIVE MEJORADO ========== */
 @media (max-width: 768px) {
   .iphone-mockup {
-    width: 350px;
-    height: 758px;
+    width: min(350px, calc(100vw - 32px));
+    height: auto;
+    aspect-ratio: 350 / 758;
     border-radius: 48px;
   }
 
@@ -733,8 +727,9 @@ body {
 
 @media (max-width: 480px) {
   .iphone-mockup {
-    width: 320px;
-    height: 693px;
+    width: min(320px, calc(100vw - 32px));
+    height: auto;
+    aspect-ratio: 320 / 693;
     border-radius: 42px;
   }
 

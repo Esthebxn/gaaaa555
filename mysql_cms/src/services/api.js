@@ -1,82 +1,57 @@
-import axios from 'axios';
+export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
-const API_BASE_URL = 'https://zoomtv2-0respaldo.onrender.com/api';
-
-// Crear instancia de axios con configuración base
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Interceptor para manejar errores
-api.interceptors.response.use(
-  (response) => response.data,
-  (error) => {
-    console.error('API Error:', error);
-    return Promise.reject(error);
+async function request(path, options = {}) {
+  const response = await fetch(`${API_URL}${path}`, options);
+  if (!response.ok) {
+    const payload = await response.json().catch(() => ({}));
+    throw new Error(payload.error || payload.message || 'No fue posible comunicarse con el servidor');
   }
-);
+  return response.status === 204 ? null : response.json();
+}
 
-// Servicio principal con métodos simplificados
-const apiService = {
-  // ===== NOSOTROS =====
-  getNosotros: () => api.get('/nosotros'),
-  createNosotros: (data) => api.post('/nosotros', data),
-  updateNosotros: (id, data) => api.put(`/nosotros/${id}`, data),
-  deleteNosotros: (id) => api.delete(`/nosotros/${id}`),
-
-  // ===== NOTICIAS =====
-  getNoticias: (filters = {}) => {
-    const params = new URLSearchParams();
-    if (filters.categoria) params.append('categoria', filters.categoria);
-    if (filters.destacada !== undefined) params.append('destacada', filters.destacada);
-    if (filters.activa !== undefined) params.append('activa', filters.activa);
-    
-    const queryString = params.toString();
-    return api.get(queryString ? `/noticias?${queryString}` : '/noticias');
-  },
-  createNoticia: (data) => api.post('/noticias', data),
-  updateNoticia: (id, data) => api.put(`/noticias/${id}`, data),
-  deleteNoticia: (id) => api.delete(`/noticias/${id}`),
-
-  // ===== PROGRAMACIÓN =====
-  getProgramacion: (filters = {}) => {
-    const params = new URLSearchParams();
-    if (filters.dia_semana) params.append('dia_semana', filters.dia_semana);
-    if (filters.categoria) params.append('categoria', filters.categoria);
-    if (filters.activo !== undefined) params.append('activo', filters.activo);
-    
-    const queryString = params.toString();
-    return api.get(queryString ? `/programacion?${queryString}` : '/programacion');
-  },
-  createProgramacion: (data) => api.post('/programacion', data),
-  updateProgramacion: (id, data) => api.put(`/programacion/${id}`, data),
-  deleteProgramacion: (id) => api.delete(`/programacion/${id}`),
-
-  // ===== ANUNCIANTES =====
-  getAnunciantes: (filters = {}) => {
-    const params = new URLSearchParams();
-    if (filters.activo !== undefined) params.append('activo', filters.activo);
-    
-    const queryString = params.toString();
-    return api.get(queryString ? `/anunciantes?${queryString}` : '/anunciantes');
-  },
-  createAnunciante: (data) => api.post('/anunciantes', data),
-  updateAnunciante: (id, data) => api.put(`/anunciantes/${id}`, data),
-  deleteAnunciante: (id) => api.delete(`/anunciantes/${id}`),
-
-  // ===== LIVE STREAM =====
-  getLiveStream: () => api.get('/live-stream'),
-  getAllLiveStreams: () => api.get('/live-stream/all'),
-  getLiveStreamById: (id) => api.get(`/live-stream/${id}`),
-  createLiveStream: (data) => api.post('/live-stream', data),
-  updateLiveStream: (id, data) => api.put(`/live-stream/${id}`, data),
-  deleteLiveStream: (id) => api.delete(`/live-stream/${id}`),
-  activateLiveStream: (id) => api.patch(`/live-stream/${id}/activate`),
-  deactivateLiveStream: (id) => api.patch(`/live-stream/${id}/deactivate`),
+export const noticiasApi = {
+  list: () => request('/noticias'),
+  create: (data) => request('/noticias', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }),
+  update: (id, data) => request(`/noticias/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }),
+  remove: (id) => request(`/noticias/${id}`, { method: 'DELETE' })
 };
 
-export default apiService;
+export const programacionApi = {
+  list: () => request('/programacion'),
+  create: (data) => request('/programacion', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }),
+  update: (id, data) => request(`/programacion/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }),
+  remove: (id) => request(`/programacion/${id}`, { method: 'DELETE' })
+};
+
+export const anunciantesApi = {
+  list: () => request('/anunciantes'),
+  create: (data) => request('/anunciantes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }),
+  update: (id, data) => request(`/anunciantes/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }),
+  remove: (id) => request(`/anunciantes/${id}`, { method: 'DELETE' })
+};
+
+export const nosotrosApi = {
+  get: () => request('/nosotros'),
+  create: (data) => request('/nosotros', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }),
+  update: (id, data) => request(`/nosotros/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }),
+  remove: (id) => request(`/nosotros/${id}`, { method: 'DELETE' })
+};
+
+export const liveStreamApi = {
+  get: () => request('/live-stream'),
+  list: () => request('/live-stream/all'),
+  create: (data) => request('/live-stream', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }),
+  update: (id, data) => request(`/live-stream/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }),
+  remove: (id) => request(`/live-stream/${id}`, { method: 'DELETE' }),
+  activate: (id) => request(`/live-stream/${id}/activate`, { method: 'PATCH' }),
+  deactivate: (id) => request(`/live-stream/${id}/deactivate`, { method: 'PATCH' })
+};
+
+export async function uploadImage(file) {
+  const formData = new FormData();
+  formData.append('image', file);
+  const response = await fetch(`${API_URL}/upload/image`, { method: 'POST', body: formData });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(payload.error || 'No fue posible subir la imagen');
+  return payload.data;
+}

@@ -79,23 +79,6 @@ const Navbar = () => {
             </Link>
           </li>
 
-          <li className="zoom-nav-item">
-            <Link 
-              to="/redes-sociales" 
-              className={`zoom-nav-link ${isActive('/redes-sociales') ? 'active' : ''}`}
-            >
-              Redes Sociales
-            </Link>
-          </li>
-
-          <li className="zoom-nav-item">
-            <Link 
-              to="/zoom-app" 
-              className={`zoom-nav-link ${isActive('/zoom-app') ? 'active' : ''}`}
-            >
-              Zoom App
-            </Link>
-          </li>
         </ul>
       </div>
     </nav>

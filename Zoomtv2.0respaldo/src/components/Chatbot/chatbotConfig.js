@@ -1,30 +1,5 @@
 // Configuración del Chatbot Zoom TV
 export const CHATBOT_CONFIG = {
-  // Configuración de la API
-  API_KEY: 'AIzaSyCrMeUIKSewl5vRauMjNpakJh6U29I5nAE',
-  MODEL: 'gemini-2.0-flash-exp',
-  
-  // Configuración del prompt
-  SYSTEM_PROMPT: `Eres un asistente virtual de Zoom TV, un canal de televisión. Responde de manera amigable y profesional en español.
-
-Contexto sobre Zoom TV:
-- Zoom TV es un canal de televisión que ofrece programación variada
-- Incluye noticias locales y regionales
-- Tiene secciones de deportes, música, programación local y contenido regional
-- Es un medio de comunicación importante en la comunidad
-- Ofrece programación en vivo y contenido grabado
-- Tiene presencia en redes sociales y plataforma digital
-
-Instrucciones:
-- Responde siempre en español
-- Sé amigable y profesional
-- Proporciona información útil sobre Zoom TV cuando sea relevante
-- Si no sabes algo específico sobre Zoom TV, admítelo pero ofrece ayuda general
-- Mantén las respuestas concisas pero informativas
-- Usa un tono conversacional y cercano
-
-Pregunta del usuario: `,
-
   // Mensajes del sistema
   MESSAGES: {
     WELCOME: "¡Hola! Soy el asistente de Zoom TV. ¿En qué puedo ayudarte hoy?",
@@ -34,7 +9,9 @@ Pregunta del usuario: `,
     SEND_BUTTON: "Enviar",
     SEND_LOADING: "...",
     ONLINE_STATUS: "Online",
-    CHAT_TITLE: "Zoom TV Assistant"
+    CHAT_TITLE: "Zoom TV Assistant",
+    FALLBACK:
+      "No tengo una respuesta puntual para eso, pero puedo contarte sobre nuestra programación, noticias, transmisión en vivo o cómo contactarnos. ¿Sobre qué te gustaría saber?"
   },
 
   // Configuración de la interfaz
@@ -58,17 +35,62 @@ Pregunta del usuario: `,
   }
 };
 
-// Función para generar el prompt completo
-export const generatePrompt = (userMessage) => {
-  return `${CHATBOT_CONFIG.SYSTEM_PROMPT}${userMessage}
+// Respuestas predefinidas basadas en palabras clave (sin API externa)
+const KEYWORD_RESPONSES = [
+  {
+    keywords: ['programa', 'programacion', 'programación', 'horario'],
+    response:
+      'Puedes consultar toda nuestra programación semanal, día por día, en la sección "Programación" del menú.'
+  },
+  {
+    keywords: ['noticia', 'actualidad', 'nacional', 'regional'],
+    response:
+      'Tenemos noticias de Actualidad, Nacionales y Regionales actualizadas en la sección "Actualidad" del sitio.'
+  },
+  {
+    keywords: ['deporte', 'futbol', 'fútbol'],
+    response: 'Sigue toda la información deportiva en la sección "Deportes".'
+  },
+  {
+    keywords: ['musica', 'música', 'concierto'],
+    response: 'Encuentra noticias sobre música y espectáculos en la sección "Música".'
+  },
+  {
+    keywords: ['vivo', 'en vivo', 'live', 'transmision', 'transmisión', 'stream'],
+    response: 'Puedes ver nuestra transmisión en vivo las 24 horas desde la sección "En Vivo".'
+  },
+  {
+    keywords: ['anunciante', 'publicidad', 'auspiciador', 'patrocinador'],
+    response:
+      'Conoce a nuestros anunciantes y aliados comerciales en la sección "Anunciantes".'
+  },
+  {
+    keywords: ['contacto', 'telefono', 'teléfono', 'correo', 'email'],
+    response:
+      'Puedes contactarnos desde la sección "Nosotros", donde encontrarás nuestro correo y teléfono.'
+  },
+  {
+    keywords: ['hola', 'buenas', 'buenos dias', 'buenos días', 'buenas tardes'],
+    response: '¡Hola! ¿En qué puedo ayudarte hoy?'
+  },
+  {
+    keywords: ['gracias'],
+    response: '¡De nada! Estoy para ayudarte.'
+  }
+];
 
-Responde de manera útil y concisa:`;
-};
+// Genera una respuesta local basada en palabras clave, sin usar ninguna API externa
+export const getLocalResponse = (userMessage) => {
+  const normalized = userMessage
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '');
 
-// Función para obtener la configuración de la API
-export const getApiConfig = () => {
-  return {
-    apiKey: CHATBOT_CONFIG.API_KEY,
-    model: CHATBOT_CONFIG.MODEL
-  };
+  for (const entry of KEYWORD_RESPONSES) {
+    if (entry.keywords.some((keyword) => normalized.includes(keyword.normalize('NFD').replace(/[̀-ͯ]/g, '')))) {
+      return entry.response;
+    }
+  }
+
+  return CHATBOT_CONFIG.MESSAGES.FALLBACK;
 };

@@ -1,140 +1,40 @@
-# 🚀 Cómo Ejecutar los Proyectos de ZoomTV
+# ZoomTV en desarrollo local
 
-## 📁 Estructura del Proyecto
+## Requisitos
 
-Tu proyecto tiene 3 carpetas principales:
+- Node.js y npm.
+- MariaDB/MySQL ejecutándose en el puerto `3306`.
+- Base de datos `zoomtv_db` configurada en `backend/.env`.
 
-```
-Zoomtv2.0respaldo/
-├── mysql_api/          # API Backend (Node.js + MySQL)
-├── mysql_cms/          # CMS Frontend (React + TypeScript)
-└── src/                # Frontend Principal (React + Vite)
-```
+## Iniciar todo
 
-## 🔧 Requisitos Previos
+Desde la carpeta raíz del repositorio:
 
-- **Node.js** (versión 16 o superior)
-- **MySQL** (versión 8.0 o superior)
-- **npm** o **yarn**
-
-## 📋 Instrucciones de Ejecución
-## ⚠️ Notas Importantes
-
-1. **Primero abre xamp y ejecuta el mysql** 
-
-### 1️⃣ **API Backend (mysql_api)**
-
-```bash
-# Navegar a la carpeta de la API
-cd mysql_api
-
-# Instalar dependencias
-npm install
-
-# Configurar la base de datos MySQL
-# 1. Crear la base de datos 'zoomtv_db'
-# 2. Ejecutar el archivo schema.sql para crear las tablas
-mysql -u root -p < database/schema.sql
-
-# Ejecutar el servidor
-npm start
-# o para desarrollo con auto-reload:
-npm run dev
+```powershell
+npm.cmd run dev
 ```
 
-**✅ La API estará disponible en:** `http://localhost:3000`
+Esto inicia la API, la web pública y el dashboard. Mantén esa terminal abierta; para detenerlos, presiona `Ctrl+C`.
 
----
+| Servicio | Dirección |
+| --- | --- |
+| Web pública | http://localhost:3002 |
+| Dashboard CMS | http://localhost:3005 |
+| API | http://localhost:3000 |
+| Estado de API y base de datos | http://localhost:3000/api/health |
 
-### 2️⃣ **CMS Frontend (mysql_cms)**
+## Configuración de base de datos
 
-```bash
-# Navegar a la carpeta del CMS
-cd mysql_cms
+Completa `backend/.env` con los datos de tu instalación local. Debe incluir `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME`. El archivo `.env` no se publica en Git.
 
-# Instalar dependencias
-npm install
+Si acabas de clonar el proyecto, instala las dependencias una vez:
 
-# Ejecutar en modo desarrollo
-npm run dev
+```powershell
+npm --prefix backend install
+npm --prefix Zoomtv2.0respaldo install
+npm --prefix mysql_cms install
 ```
 
-**✅ El CMS estará disponible en:** `http://localhost:5173`
+Si un puerto ya está ocupado, el script conserva el servicio que ya está corriendo y evita abrir una instancia duplicada. Si ese puerto pertenece a otra aplicación, ciérrala y vuelve a ejecutar `npm run dev`.
 
----
-
-### 3️⃣ **Frontend Principal (src/)**
-
-```bash
-# Navegar a la carpeta raíz del proyecto
-cd .
-
-# Instalar dependencias
-npm install
-
-# Ejecutar en modo desarrollo
-npm run dev
-```
-
-**✅ El Frontend estará disponible en:** `http://localhost:5173`
-
----
-
-## 🔄 Orden de Ejecución Recomendada
-
-### Para desarrollo completo:
-
-1. **Primero:** Ejecutar la API Backend
-   ```bash
-   cd mysql_api
-   npm install
-   npm start
-   ```
-
-2. **Segundo:** Ejecutar el Frontend Principal
-   ```bash
-   cd ..
-   npm install
-   npm run dev
-   ```
-
-3. **Tercero:** (Opcional) Ejecutar el CMS
-   ```bash
-   cd mysql_cms
-   npm install
-   npm run dev
-   ```
-
-## 🌐 URLs de Acceso
-
-- **Frontend Principal:** `http://localhost:5173`
-- **API Backend:** `http://localhost:3000`
-- **CMS Admin:** `http://localhost:5174` (si ejecutas el CMS en puerto diferente)
-
-## 🔧 Comandos Útiles
-
-### Para la API:
-```bash
-cd mysql_api
-npm start          # Producción
-npm run dev        # Desarrollo con nodemon
-```
-
-### Para el Frontend:
-```bash
-npm run dev        # Desarrollo
-npm run build      # Construir para producción
-npm run preview    # Vista previa de producción
-```
-
-### Para el CMS:
-```bash
-cd mysql_cms
-npm run dev        # Desarrollo
-npm run build      # Construir para producción
-```
-
-
-
-
-**🎉 ¡Listo! Ya tienes todo el proyecto de ZoomTV ejecutándose.**
+También puedes iniciar un servicio por separado con `npm.cmd run dev:api`, `npm.cmd run dev:web` o `npm.cmd run dev:cms`.

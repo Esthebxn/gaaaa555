@@ -1,0 +1,235 @@
+.anunciantes-manager {
+  width: 100%;
+  min-width: 0;
+}
+
+.anunciantes-manager .manager-header {
+  align-items: center;
+  gap: 1rem;
+}
+
+.anunciantes-manager .header-left {
+  display: block;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.anunciantes-manager .header-left h2 {
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.anunciantes-manager .header-left p {
+  overflow-wrap: anywhere;
+}
+
+.anunciantes-manager .manager-header > .primary-btn {
+  flex: 0 0 auto;
+}
+
+.anunciantes-manager .manager-header > .primary-btn:disabled {
+  cursor: wait;
+  opacity: 0.65;
+  transform: none;
+}
+
+.anunciantes-manager .search-section {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+}
+
+.anunciantes-manager .search-box,
+.anunciantes-manager .search-input {
+  min-width: 0;
+}
+
+.anunciantes-manager .filter-btn {
+  white-space: nowrap;
+}
+
+.anunciantes-filter-panel {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: fit-content;
+  max-width: 100%;
+  padding: 0.65rem 0.8rem;
+  color: rgba(255, 255, 255, 0.8);
+  background: #0b0b0b;
+  border: 1px solid rgba(220, 38, 38, 0.35);
+  border-radius: 0.55rem;
+}
+
+.anunciantes-filter-panel label {
+  font-size: 0.8rem;
+}
+
+.anunciantes-filter-panel select {
+  min-width: 180px;
+  max-width: 100%;
+  padding: 0.55rem 0.7rem;
+  color: white;
+  background: #161616;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.4rem;
+}
+
+.anunciantes-filter-panel option {
+  color: white;
+  background: #161616;
+}
+
+.anunciantes-manager .items-grid .anunciante-item-card {
+  align-items: center;
+  gap: 0.8rem;
+  min-width: 0;
+  min-height: 72px;
+  padding: 0.55rem 0.7rem;
+}
+
+.anunciantes-manager .items-grid .anunciante-item-card .card-image {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+  margin: 0;
+  overflow: hidden;
+  background: #171717;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.45rem;
+}
+
+.anunciantes-manager .items-grid .anunciante-item-card .card-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 3px;
+  object-fit: contain;
+}
+
+.anunciantes-manager .items-grid .anunciante-item-card .placeholder-image {
+  background: transparent;
+}
+
+.anunciantes-manager .items-grid .anunciante-item-card .placeholder-image .icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: rgba(255, 255, 255, 0.52);
+}
+
+.anunciantes-manager .items-grid .anunciante-item-card .card-content {
+  flex: 1 1 auto;
+  width: 0;
+  min-width: 0;
+}
+
+.anunciantes-manager .items-grid .anunciante-item-card .card-content h3 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.anunciantes-manager .items-grid .anunciante-item-card .card-content p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.anunciantes-manager .items-grid .anunciante-item-card .card-actions {
+  flex: 0 0 auto;
+  gap: 0.35rem;
+}
+
+.anunciantes-manager .items-grid .anunciante-item-card .action-btn {
+  width: 34px;
+  height: 34px;
+}
+
+.anunciantes-manager .items-grid .anunciante-item-card .action-btn .icon {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+@media (max-width: 767px) {
+  .anunciantes-manager .manager-header {
+    align-items: stretch;
+  }
+
+  .anunciantes-manager .manager-header > .primary-btn {
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .anunciantes-manager .search-section {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.5rem;
+  }
+
+  .anunciantes-manager .search-input {
+    padding-left: 2.4rem;
+  }
+
+  .anunciantes-manager .filter-btn {
+    padding: 0.65rem 0.7rem;
+  }
+
+  .anunciantes-filter-panel {
+    width: 100%;
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .anunciantes-filter-panel select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .anunciantes-manager .items-grid .anunciante-item-card {
+    gap: 0.55rem;
+    min-height: 66px;
+    padding: 0.5rem;
+  }
+
+  .anunciantes-manager .items-grid .anunciante-item-card .card-image {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+  }
+
+  .anunciantes-manager .items-grid .anunciante-item-card .card-content h3 {
+    font-size: 0.8rem;
+  }
+
+  .anunciantes-manager .items-grid .anunciante-item-card .card-content p {
+    font-size: 0.68rem;
+  }
+
+  .anunciantes-manager .items-grid .anunciante-item-card .action-btn {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+@media (max-width: 360px) {
+  .anunciantes-manager .items-grid .anunciante-item-card {
+    gap: 0.4rem;
+  }
+
+  .anunciantes-manager .items-grid .anunciante-item-card .card-image {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+  }
+
+  .anunciantes-manager .items-grid .anunciante-item-card .card-actions {
+    gap: 0.2rem;
+  }
+
+  .anunciantes-manager .items-grid .anunciante-item-card .action-btn {
+    width: 28px;
+    height: 28px;
+  }
+}

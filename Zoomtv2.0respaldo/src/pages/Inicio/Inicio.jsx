@@ -1,6 +1,7 @@
 import React from 'react';
 import './Inicio.css';
 import bannerPrincipal from '../../assets/images/logoZoomtv.png';
+import SocialFloat from '../../components/SocialFloat/SocialFloat';
 
 const Inicio = () => {
   // Choose either image banner or video banner
@@ -40,7 +41,7 @@ const Inicio = () => {
         )}
       </section>
       
-     
+      <SocialFloat />
     </main>
   );
 };

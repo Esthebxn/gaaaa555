@@ -1,72 +1,60 @@
 import React, { useState, useEffect } from "react";
 import "./Live9.css";
-import apiService from "../../services/api";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+
+// URL de stream de respaldo
+const STREAM_FALLBACK = {
+  titulo: "Zoom TV En Vivo",
+  url_stream: "https://www.youtube.com/embed/k8l77dz-OgY?autoplay=1&rel=0&modestbranding=1",
+};
 
 const Live9 = () => {
-  const [liveStreamData, setLiveStreamData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [streamData, setStreamData] = useState(STREAM_FALLBACK);
 
   useEffect(() => {
-    const loadLiveStream = async () => {
-      try {
-        setLoading(true);
-        const data = await apiService.getLiveStream();
-        setLiveStreamData(data);
-      } catch (err) {
-        console.error('Error cargando live stream:', err);
-        setError('Error al cargar la transmisión en vivo');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadLiveStream();
+    fetch(`${API_URL}/live-stream`)
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        if (data && data.url_stream) {
+          setStreamData(data);
+        }
+      })
+      .catch((err) => {
+        console.warn("No se pudo cargar live stream desde la API, usando URL de respaldo:", err);
+      });
   }, []);
 
-  if (loading) {
-    return (
-      <div className="live9-container-alt">
-        <div style={{ textAlign: 'center', padding: '50px' }}>
-          <h2>Cargando transmisión en vivo...</h2>
-        </div>
-      </div>
-    );
-  }
+  // Convertir URL normal de YouTube a embed
+  const getEmbedUrl = (url) => {
+    if (!url) return STREAM_FALLBACK.url_stream;
+    if (url.includes("/embed/")) return url;
+    const match = url.match(/(?:v=|youtu\.be\/)([^&?/]+)/);
+    if (match) {
+      return `https://www.youtube.com/embed/${match[1]}?autoplay=1&rel=0&modestbranding=1`;
+    }
+    return url;
+  };
 
-  if (error) {
-    return (
-      <div className="live9-container-alt">
-        <div style={{ textAlign: 'center', padding: '50px', color: 'red' }}>
-          <h2>Error: {error}</h2>
-        </div>
-      </div>
-    );
-  }
-
-  if (!liveStreamData) {
-    return (
-      <div className="live9-container-alt">
-        <div style={{ textAlign: 'center', padding: '50px' }}>
-          <h2>No hay transmisión en vivo disponible</h2>
-        </div>
-      </div>
-    );
-  }
+  const embedUrl = getEmbedUrl(streamData.url_stream);
 
   return (
     <div className="live9-container-alt">
       <div className="live9-player-alt">
         {/* Branding dentro del reproductor */}
-        <div className="live9-brand-inside">📺 {liveStreamData.titulo}</div>
+        <div className="live9-brand-inside">📺 {streamData.titulo || "En Vivo"}</div>
 
-        {/* Iframe dinámico desde la API */}
+        {/* Iframe de YouTube */}
         <iframe
-          src={liveStreamData.url_stream}
+          src={embedUrl}
           className="live9-video-alt"
-          allow="autoplay; fullscreen; picture-in-picture"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
           allowFullScreen
-          title={liveStreamData.titulo}
+          referrerPolicy="strict-origin-when-cross-origin"
+          title={streamData.titulo || "Live Stream"}
         ></iframe>
       </div>
     </div>
@@ -74,4 +62,3 @@ const Live9 = () => {
 };
 
 export default Live9;
- 

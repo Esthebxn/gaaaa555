@@ -175,21 +175,6 @@ const HamburguesaMenu = () => {
                 </div>
               </Link>
 
-              <Link to="/redes-sociales" onClick={closeMenu} className="menu-link">
-                <span className="menu-icon" aria-hidden="true">📱</span>
-                <div className="menu-text">
-                  <span className="menu-title">Redes Sociales</span>
-                  <span className="menu-desc">Síguenos en redes</span>
-                </div>
-              </Link>
-
-              <Link to="/zoom-app" onClick={closeMenu} className="menu-link app-link">
-                <span className="menu-icon" aria-hidden="true">📲</span>
-                <div className="menu-text">
-                  <span className="menu-title">Zoom App</span>
-                  <span className="menu-desc">Descarga nuestra aplicación</span>
-                </div>
-              </Link>
             </nav>
 
             <div className="menu-footer">

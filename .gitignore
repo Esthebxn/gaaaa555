@@ -1,4 +1,36 @@
+# Dependencias y compilaciones (se regeneran)
 node_modules/
+dist/
+build/
+.vite/
+coverage/
+
+# Credenciales (NUNCA subir)
 .env
-uploads/*
-!uploads/.gitkeep
+.env.*
+!.env.example
+!env.example
+**/.env
+**/.env.*
+
+# Respaldos y temporales
+*.backup_*
+*.backup-*
+*.bak
+*.old
+*~
+.git_old/
+.git_old_*/
+**/.git_old/
+**/.git_old_*/
+
+# Respaldos de base de datos
+Zoomdbdatabasetodoslosmodelos*.zip
+ZoomTV_BD_*/
+*.sql.zip
+
+# Sistema y editor
+.DS_Store
+Thumbs.db
+*.log
+.vscode/

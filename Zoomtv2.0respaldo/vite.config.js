@@ -29,7 +29,6 @@ export default defineConfig({
           vendor: ['react', 'react-dom'],
           router: ['react-router-dom'],
           ui: ['react-icons'],
-          ai: ['@google/generative-ai'],
           utils: ['axios', 'hls.js']
         }
       }

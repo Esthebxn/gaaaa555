@@ -86,23 +86,24 @@
 .menu-panel {
   position: fixed;
   top: 0;
-  right: -100%;
-  width: 90%;
+  right: 0;
+  width: min(90vw, 400px);
   max-width: 400px;
-  min-width: 300px;
   height: 100vh;
+  height: 100dvh;
   background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
   box-shadow: -8px 0 25px rgba(0, 0, 0, 0.4);
   z-index: 1200;
   display: flex;
   flex-direction: column;
-  transition: right 0.3s ease;
+  transform: translateX(105%);
+  transition: transform 0.3s ease;
   overflow-y: auto;
   border-left: 3px solid #ff0033;
 }
 
 .menu-panel.visible {
-  right: 0;
+  transform: translateX(0);
 }
 
 /* Encabezado del menú */
@@ -256,8 +257,13 @@
 /* Submenú */
 .has-submenu {
   position: relative;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: center;
+}
+
+.has-submenu .menu-text {
+  flex: 1;
 }
 
 .submenu-toggle {
@@ -279,10 +285,11 @@
 .submenu {
   list-style: none;
   padding: 0;
-  margin: 12px 0 0 40px;
+  margin: 8px 0 0 42px;
   display: none;
   flex-direction: column;
   gap: 6px;
+  flex: 1 0 100%;
 }
 
 .has-submenu.open .submenu {
@@ -292,16 +299,16 @@
 .submenu-link {
   padding: 12px 16px;
   text-decoration: none;
-  color: #444;
+  color: #eee;
   font-size: 16px;
   border-radius: 8px;
   transition: all 0.3s;
 }
 
 .submenu-link:hover {
-  color: #000;
+  color: #fff;
   font-weight: 500;
-  background: #f8f8f8;
+  background: rgba(255, 255, 255, 0.1);
   transform: translateX(4px);
 }
 
@@ -392,6 +399,26 @@
   .header .nav-links {  /* ocultar menú normal en móvil */
     display: none !important;
   }
+}
+
+@media (max-width: 360px) {
+  .menu-panel {
+    width: 100vw;
+    max-width: none;
+  }
+
+  .menu-items {
+    padding: 14px;
+    gap: 8px;
+  }
+
+  .menu-link {
+    gap: 12px;
+    padding: 14px 12px;
+  }
+
+  .menu-title { font-size: 16px; }
+  .menu-desc { font-size: 12px; }
 }
 
 @media (min-width: 769px) {

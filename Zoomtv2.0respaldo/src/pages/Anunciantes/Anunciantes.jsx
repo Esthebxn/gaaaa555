@@ -1,187 +1,117 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import "./Anunciantes.css";
-import apiService from "../../services/api";
+import { ANUNCIANTE_PLACEHOLDER, FLYER_PLACEHOLDER } from "../../utils/placeholderImage";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
 export default function Anunciantes() {
-  const [selectedAnunciante, setSelectedAnunciante] = useState(null);
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [anunciantes, setAnunciantes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [anunciantesData, setAnunciantesData] = useState([]);
 
-  // Cargar anunciantes de la API
   useEffect(() => {
-    const loadAnunciantes = async () => {
-      try {
-        setLoading(true);
-        const data = await apiService.getAnunciantes();
-        setAnunciantesData(data);
-      } catch (err) {
-        console.error('Error cargando anunciantes:', err);
-        setError('Error al cargar los anunciantes');
-      } finally {
+    let vigente = true;
+    fetch(`${API_URL}/anunciantes`)
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        if (!vigente) return;
+        setAnunciantes(Array.isArray(data) ? data : []);
         setLoading(false);
-      }
-    };
-
-    loadAnunciantes();
+      })
+      .catch((err) => {
+        console.warn("No se pudo cargar anunciantes desde la API:", err);
+        if (vigente) {
+          setAnunciantes([]);
+          setLoading(false);
+        }
+      });
+    return () => { vigente = false; };
   }, []);
 
+  const volverAlListado = () => navigate("/anunciantes");
 
-  // Función para reintentar carga
-  const handleRetry = () => {
-    setError(null);
-    setLoading(true);
-    const loadAnunciantes = async () => {
-      try {
-        const data = await apiService.getAnunciantes();
-        setAnunciantesData(data);
-        setLoading(false);
-      } catch (err) {
-        console.error('Error cargando anunciantes:', err);
-        setError('Error al cargar los anunciantes');
-        setLoading(false);
-      }
-    };
-    loadAnunciantes();
-  };
-
-  const handleAnuncianteClick = (anunciante) => {
-    setSelectedAnunciante(anunciante);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedAnunciante(null);
-  };
-
-
-  // Manejar clics en el modal para cerrar
-  useEffect(() => {
-    const handleEscape = (event) => {
-      if (event.key === 'Escape') {
-        handleCloseModal();
-      }
-    };
-
-    if (selectedAnunciante) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
-    };
-  }, [selectedAnunciante]);
-
-  if (error) {
-    return (
-      <div className="anunciantes-container">
-        <div className="error-container">
-          <div className="error-message">
-            {error}
-          </div>
-          <button className="retry-button" onClick={handleRetry}>
-            Reintentar
-          </button>
-        </div>
-      </div>
-    );
+  if (loading) {
+    return <main className="anunciantes-container"><p className="anunciantes-estado">Cargando anunciantes...</p></main>;
   }
 
-  // Solo mostrar "No hay anunciantes disponibles" si no está cargando y no hay datos
-  if (!loading && (!anunciantesData || anunciantesData.length === 0)) {
+  if (id) {
+    const anunciante = anunciantes.find((item) => String(item.id) === id);
+    if (!anunciante) {
+      return (
+        <main className="anunciantes-detalle-container">
+          <button className="anunciantes-volver" onClick={volverAlListado}>← Volver a anunciantes</button>
+          <p className="anunciantes-estado">No se encontró el anunciante.</p>
+        </main>
+      );
+    }
+
+    const imagen = anunciante.flyer_url || anunciante.logo_url || anunciante.imagen_url || anunciante.imagen;
     return (
-      <div className="anunciantes-container">
-        <header className="anunciantes-header">
-          <h1>ANUNCIANTES</h1>
-          <p>Conoce a nuestros patrocinadores y aliados comerciales</p>
-        </header>
-        <div style={{ textAlign: 'center', padding: '50px' }}>
-          <h2>No hay anunciantes disponibles</h2>
-        </div>
-      </div>
+      <main className="anunciantes-detalle-container">
+        <button className="anunciantes-volver" onClick={volverAlListado}>← Volver a anunciantes</button>
+        <article className="anunciantes-detalle">
+          <span className="anunciantes-kicker">{anunciante.categoria || "Anunciante"}</span>
+          <h1>{anunciante.nombre}</h1>
+          <p className="anunciantes-byline">Patrocinador y aliado comercial de Zoom TV</p>
+          <img
+            src={imagen || FLYER_PLACEHOLDER}
+            alt={`Imagen de ${anunciante.nombre}`}
+            className="anunciantes-detalle-img"
+            onError={(event) => {
+              event.currentTarget.onerror = null;
+              event.currentTarget.src = FLYER_PLACEHOLDER;
+            }}
+          />
+          {anunciante.descripcion && <p className="anunciantes-descripcion">{anunciante.descripcion}</p>}
+          <dl className="anunciantes-contacto">
+            {anunciante.telefono && <div><dt>Teléfono</dt><dd>{anunciante.telefono}</dd></div>}
+            {anunciante.direccion && <div><dt>Dirección</dt><dd>{anunciante.direccion}</dd></div>}
+            {anunciante.horario && <div><dt>Horario</dt><dd>{anunciante.horario}</dd></div>}
+          </dl>
+        </article>
+      </main>
     );
   }
 
   return (
-    <div className="actualidad-container">
-      {/* Header con diseño de Actualidad - Título rojo */}
-      <header className="header-actualidad">
+    <main className="anunciantes-container">
+      <header className="anunciantes-header">
         <h1>ANUNCIANTES</h1>
       </header>
-
-      {loading ? (
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>Cargando anunciantes...</p>
-        </div>
-      ) : (
-        <div className="noticias-grid">
-          {anunciantesData.map((anunciante) => (
-            <article 
-              key={anunciante.id} 
-              className="noticia-card"
-              onClick={() => handleAnuncianteClick(anunciante)}
+      {anunciantes.length ? (
+        <div className="anunciantes-grid">
+          {anunciantes.map((anunciante) => (
+            <button
+              key={anunciante.id}
+              type="button"
+              className="anunciante-card"
+              onClick={() => navigate(`/anunciantes/${encodeURIComponent(anunciante.id)}`)}
             >
               <img
-                src={anunciante.imagen || anunciante.logo_url}
+                src={anunciante.logo_url || anunciante.imagen_url || anunciante.imagen || ANUNCIANTE_PLACEHOLDER}
                 alt={anunciante.nombre}
-                className="noticia-img"
-                onError={(e) => {
-                  e.target.src = "https://via.placeholder.com/400x200/333333/ffffff?text=Imagen+Anunciante";
+                className="anunciante-img"
+                onError={(event) => {
+                  event.currentTarget.onerror = null;
+                  event.currentTarget.src = ANUNCIANTE_PLACEHOLDER;
                 }}
               />
-              <div className="noticia-info">
-                <h2>{anunciante.nombre}</h2>
-                <p className="noticia-meta">🏷️ {anunciante.categoria}</p>
-                <p className="noticia-desc">{anunciante.descripcion}</p>
-              </div>
-            </article>
+              <span className="anunciante-info">
+                <span className="anunciante-categoria">{anunciante.categoria || "Anunciante"}</span>
+                <span className="anunciante-titulo">{anunciante.nombre}</span>
+                {anunciante.descripcion && <span className="anunciante-descripcion-corta">{anunciante.descripcion}</span>}
+              </span>
+            </button>
           ))}
         </div>
+      ) : (
+        <p className="anunciantes-estado">No hay anunciantes disponibles.</p>
       )}
-
-      {/* Modal para mostrar detalles del anunciante */}
-      {selectedAnunciante && (
-        <div 
-          className="modal-overlay"
-          onClick={handleCloseModal}
-        >
-          <div 
-            className="modal-content" 
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button 
-              className="modal-close"
-              onClick={handleCloseModal}
-            >
-              ✕
-            </button>
-            <img
-              src={selectedAnunciante.flyer || selectedAnunciante.imagen}
-              alt={`Flyer de ${selectedAnunciante.nombre}`}
-              className="modal-img"
-              onError={(e) => {
-                e.target.src = "https://via.placeholder.com/600x300/333333/ffffff?text=Flyer+No+Disponible";
-              }}
-            />
-            <h2 className="modal-titulo">{selectedAnunciante.nombre}</h2>
-            <p className="modal-meta">
-              🏷️ {selectedAnunciante.categoria}
-            </p>
-            <p className="modal-desc">
-              {selectedAnunciante.descripcion}
-            </p>
-            <div className="modal-contact-info">
-              <p><strong>📞 Teléfono:</strong> {selectedAnunciante.telefono}</p>
-              <p><strong>📍 Dirección:</strong> {selectedAnunciante.direccion}</p>
-              <p><strong>🕒 Horario:</strong> {selectedAnunciante.horario}</p>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+    </main>
   );
-} 
+}

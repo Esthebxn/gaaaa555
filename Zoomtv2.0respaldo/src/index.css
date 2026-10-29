@@ -47,6 +47,8 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: var(--header-height);
+  width: 100%;
+  overflow-x: clip;
 }
 
 body {
@@ -58,6 +60,19 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+}
+
+#root,
+.app {
+  width: 100%;
+  min-width: 0;
+  min-height: 100vh;
+}
+
+img,
+video,
+iframe {
+  max-width: 100%;
 }
 
 /* Mejora de rendimiento para animaciones */
@@ -207,8 +222,7 @@ body {
 
 /* Hero Banner con animación mejorada */
 .hero-banner {
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), 
-              url('https://via.placeholder.com/1920x1080?text=ZOOM+TV') center/cover no-repeat;
+  background: linear-gradient(135deg, #111111, #333333);
   min-height: min(80vh, 600px);
   display: flex;
   align-items: center;

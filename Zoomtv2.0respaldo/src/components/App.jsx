@@ -13,6 +13,7 @@ import Deportes from "../pages/Actualidad/Deportes";
 import Nacionales from "../pages/Actualidad/Nacionales";
 import Regionales from "../pages/Actualidad/Regionales";
 import Musica from "../pages/Actualidad/Musica";
+import Noticia from "../pages/Noticia/Noticia";
 import RedesSociales from "../pages/RedesSociales/RedesSociales";
 import Programacion12 from "../pages/Programacion/Programacion12";
 import Anunciantes from "../pages/Anunciantes/Anunciantes";
@@ -48,9 +49,11 @@ function App() {
           <Route path="/actualidad/nacionales" element={<Nacionales />} />
           <Route path="/actualidad/regionales" element={<Regionales />} />
           <Route path="/actualidad/musica" element={<Musica />} />
+          <Route path="/noticia/:categoria/:id" element={<Noticia />} />
           <Route path="/programacion" element={<Programacion12 />} />
           <Route path="/envivo" element={<Live9 />} />
           <Route path="/anunciantes" element={<Anunciantes />} />
+          <Route path="/anunciantes/:id" element={<Anunciantes />} />
           <Route path="/redes-sociales" element={<RedesSociales />} />
           <Route path="/zoom-app" element={<ZoomApp />} />
           <Route path="/live" element={<Live9 />} />

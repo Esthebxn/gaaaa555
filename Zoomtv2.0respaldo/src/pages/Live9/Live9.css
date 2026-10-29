@@ -1,42 +1,142 @@
+/* ==========================================
+   Live9.css - Reproductor Zoom TV Canal 10
+   ========================================== */
+
+/* Contenedor general de la sección */
 .live9-container-alt {
+  width: 100%;
+  padding: 24px 16px;
+  box-sizing: border-box;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  background: #000;
-  width: 100%;
-  min-height: 100vh; /* ocupa toda la pantalla */
-  padding-top: 160px; /* 🔽 antes 120px → ahora 160px, baja más el reproductor */
-  padding-bottom: 40px;
+  align-items: center;
+  background: #000000; /* ← FONDO NEGRO */
 }
 
+/* Marco del reproductor (mantiene proporción 16:9) */
 .live9-player-alt {
   position: relative;
-  width: 70%;
-  max-width: 1000px;
-  aspect-ratio: 16/9;
-  border: 2px solid red;
-  border-radius: 12px;
-  overflow: hidden;
+  width: 100%;
+  max-width: 960px;
+  aspect-ratio: 16 / 9;
   background: #000;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
+/* Iframe del video */
 .live9-video-alt {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   border: none;
+  display: block;
+  background: #000;
 }
 
-/* 📱 Responsive para móviles */
+/* Insignia con el nombre del canal */
+.live9-brand-inside {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  pointer-events: none; /* no bloquea los clics en el video */
+  user-select: none;
+  animation: live9-fade-in 0.6s ease both;
+}
+
+/* Punto rojo "EN VIVO" (opcional: agrega <span className="live9-dot"></span> en el JSX) */
+.live9-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ff2d2d;
+  box-shadow: 0 0 0 0 rgba(255, 45, 45, 0.7);
+  animation: live9-pulse 1.6s infinite;
+}
+
+/* Animaciones */
+@keyframes live9-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(255, 45, 45, 0.7); }
+  70%  { box-shadow: 0 0 0 10px rgba(255, 45, 45, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 45, 45, 0); }
+}
+
+@keyframes live9-fade-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Tablets ---------- */
 @media (max-width: 768px) {
-  .live9-player-alt {
-    width: 95%;
-    max-width: none;
-    aspect-ratio: 16/9;
+  .live9-container-alt {
+    padding: 16px 12px;
   }
 
-  .live9-container-alt {
-    padding-top: 180px; /* 🔽 antes 140px → ahora 180px en móviles */
-    padding-bottom: 30px;
+  .live9-player-alt {
+    border-radius: 10px;
+  }
+
+  .live9-brand-inside {
+    top: 8px;
+    left: 8px;
+    padding: 5px 10px;
+    font-size: 13px;
   }
 }
- 
+
+/* ---------- Móviles ---------- */
+@media (max-width: 480px) {
+  .live9-container-alt {
+    padding: 8px 0;
+  }
+
+  .live9-player-alt {
+    border-radius: 0; /* pantalla completa en ancho */
+    box-shadow: none;
+  }
+
+  .live9-brand-inside {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+}
+
+/* ---------- Modo claro ---------- */
+@media (prefers-color-scheme: light) {
+  .live9-container-alt {
+    background: #000000; /* ← FONDO NEGRO también en modo claro */
+  }
+
+  .live9-player-alt {
+    box-shadow:
+      0 10px 30px rgba(0, 0, 0, 0.18),
+      0 0 0 1px rgba(0, 0, 0, 0.06);
+  }
+}
+
+/* ---------- Accesibilidad: reducir animaciones ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .live9-brand-inside,
+  .live9-dot {
+    animation: none;
+  }
+} 

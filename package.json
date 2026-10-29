@@ -1,0 +1,12 @@
+{
+  "name": "zoomtv-workspace",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/dev-all.cjs",
+    "dev:all": "node scripts/dev-all.cjs",
+    "dev:web": "npm --prefix Zoomtv2.0respaldo run dev",
+    "dev:cms": "npm --prefix mysql_cms run dev",
+    "dev:api": "npm --prefix backend run dev",
+    "build": "npm --prefix Zoomtv2.0respaldo run build"
+  }
+}

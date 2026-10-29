@@ -1,7 +1,38 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import { CHATBOT_CONFIG, generatePrompt, getApiConfig } from './chatbotConfig';
+import { Link } from 'react-router-dom';
+import { CHATBOT_CONFIG } from './chatbotConfig';
+import { NOTICIA_PLACEHOLDER } from '../../utils/placeholderImage';
 import './Chatbot.css';
+
+const API_URL = (() => {
+  const configuredUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+  try {
+    const api = new URL(configuredUrl, window.location.origin);
+    const isLoopback = ['localhost', '127.0.0.1', '::1'].includes(api.hostname);
+    const pageIsLoopback = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+
+    // En móvil, "localhost" apunta al propio teléfono. En desarrollo usamos el
+    // mismo host desde el que se abrió la página; en producción usamos el origen del sitio.
+    if (isLoopback && !pageIsLoopback) {
+      if (import.meta.env.DEV) api.hostname = window.location.hostname;
+      else return `${window.location.origin}/api`;
+    }
+    return api.toString().replace(/\/$/, '');
+  } catch {
+    return `${window.location.origin}/api`;
+  }
+})();
+const QUICK_QUESTIONS = [
+  'Noticias de Actualidad',
+  'Noticias de Deportes',
+  'Noticias Nacionales',
+  'Noticias Regionales',
+  'Noticias de Música',
+  '¿Cuál es la programación de hoy?',
+  '¿Qué anunciantes están activos?',
+  '¿Cuáles son las redes sociales?',
+  '¿Cómo veo el canal en vivo?'
+];
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,11 +48,6 @@ const Chatbot = () => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
-
-  // Configuración de Gemini
-  const apiConfig = getApiConfig();
-  const genAI = new GoogleGenerativeAI(apiConfig.apiKey);
-  const model = genAI.getGenerativeModel({ model: apiConfig.model });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -41,12 +67,13 @@ const Chatbot = () => {
     }
   };
 
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim() || isLoading) return;
+  const handleSendMessage = async (suggestedQuestion) => {
+    const messageText = (typeof suggestedQuestion === 'string' ? suggestedQuestion : inputMessage).trim();
+    if (!messageText || isLoading) return;
 
     const userMessage = {
       id: Date.now(),
-      text: inputMessage.trim(),
+      text: messageText,
       isUser: true,
       timestamp: new Date()
     };
@@ -55,31 +82,55 @@ const Chatbot = () => {
     setInputMessage('');
     setIsLoading(true);
 
+    let requestTimeout;
     try {
-      const prompt = generatePrompt(userMessage.text);
-
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const text = response.text();
+      const controller = new AbortController();
+      requestTimeout = window.setTimeout(() => controller.abort(), 20000);
+      const response = await fetch(`${API_URL}/assistant/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
+        body: JSON.stringify({
+          message: userMessage.text,
+          history: messages.slice(-8).map((message) => ({
+            role: message.isUser ? 'user' : 'assistant',
+            text: message.text
+          }))
+        })
+      });
+      window.clearTimeout(requestTimeout);
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error || 'No fue posible consultar la base de datos.');
+      if (typeof payload.response !== 'string' || !payload.response.trim()) {
+        throw new Error('El asistente recibió una respuesta vacía. Inténtalo nuevamente.');
+      }
 
       const botMessage = {
         id: Date.now() + 1,
-        text: text,
+        text: payload.response || CHATBOT_CONFIG.MESSAGES.FALLBACK,
+        newsCards: Array.isArray(payload.newsCards) ? payload.newsCards : [],
+        liveCta: payload.liveCta || null,
         isUser: false,
         timestamp: new Date()
       };
 
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
-      console.error('Error al obtener respuesta de Gemini:', error);
+      console.error('Error al generar respuesta:', error);
+      const errorText = error.name === 'AbortError'
+        ? 'La consulta tardó demasiado. Comprueba que el servidor esté activo e inténtalo de nuevo.'
+        : error instanceof TypeError
+          ? `No pude conectar con el servidor (${API_URL}). Comprueba que la API esté iniciada e inténtalo de nuevo.`
+          : error.message || CHATBOT_CONFIG.MESSAGES.ERROR;
       const errorMessage = {
         id: Date.now() + 1,
-        text: CHATBOT_CONFIG.MESSAGES.ERROR,
+        text: errorText,
         isUser: false,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
+      window.clearTimeout(requestTimeout);
       setIsLoading(false);
     }
   };
@@ -141,6 +192,37 @@ const Chatbot = () => {
                     }`}
                   >
                     <div className="chatbot-message-text">{message.text}</div>
+                    {message.newsCards?.map((news) => (
+                      <Link key={`${message.id}-${news.id}`} to={news.href} className="chatbot-news-card">
+                        <img
+                          src={news.image || NOTICIA_PLACEHOLDER}
+                          alt={news.title}
+                          loading="lazy"
+                          onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = NOTICIA_PLACEHOLDER; }}
+                        />
+                        <div className="chatbot-news-card-body">
+                          <span className="chatbot-news-card-category">{news.category}</span>
+                          <h3>{news.title}</h3>
+                          <p>{news.summary}</p>
+                          {(news.date || news.source) && <small>{[news.date, news.source].filter(Boolean).join(' · ')}</small>}
+                          <span className="chatbot-news-card-link">Leer noticia →</span>
+                        </div>
+                      </Link>
+                    ))}
+                    {message.liveCta && (
+                      <Link to={message.liveCta.href || '/live'} className="chatbot-live-cta">
+                        {message.liveCta.label || 'Ver Live'}
+                      </Link>
+                    )}
+                    {!message.isUser && message.id === 1 && messages.length === 1 && (
+                      <div className="chatbot-suggestions" aria-label="Preguntas sugeridas">
+                        {QUICK_QUESTIONS.map((question) => (
+                          <button key={question} type="button" onClick={() => handleSendMessage(question)} disabled={isLoading}>
+                            {question}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                     <div className="chatbot-message-time">
                       {formatTime(message.timestamp)}
                     </div>
@@ -181,7 +263,7 @@ const Chatbot = () => {
                 />
                 <button 
                   className="chatbot-send-button"
-                  onClick={handleSendMessage}
+                  onClick={() => handleSendMessage()}
                   disabled={isLoading || !inputMessage.trim()}
                 >
                   {isLoading ? CHATBOT_CONFIG.MESSAGES.SEND_LOADING : CHATBOT_CONFIG.MESSAGES.SEND_BUTTON}
