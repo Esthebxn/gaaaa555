@@ -227,6 +227,12 @@
   box-shadow: 0 4px 15px rgba(255, 0, 51, 0.2);
 }
 
+.menu-link.has-submenu.active {
+  border-color: rgba(255, 0, 51, 0.9);
+  background: rgba(255, 0, 51, 0.12);
+  animation: news-section-pulse 2s ease-in-out infinite;
+}
+
 .menu-icon {
   font-size: 26px;
   min-width: 26px;
@@ -296,6 +302,14 @@
   display: flex;
 }
 
+.has-submenu.open .submenu-link {
+  animation: submenu-section-enter 360ms cubic-bezier(.2,.75,.3,1) both;
+}
+
+.has-submenu.open .submenu li:nth-child(2) .submenu-link { animation-delay: 55ms; }
+.has-submenu.open .submenu li:nth-child(3) .submenu-link { animation-delay: 110ms; }
+.has-submenu.open .submenu li:nth-child(4) .submenu-link { animation-delay: 165ms; }
+
 .submenu-link {
   padding: 12px 16px;
   text-decoration: none;
@@ -310,6 +324,24 @@
   font-weight: 500;
   background: rgba(255, 255, 255, 0.1);
   transform: translateX(4px);
+}
+
+.submenu-link.active {
+  color: #fff;
+  font-weight: 600;
+  background: rgba(255, 0, 51, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(255, 0, 51, 0.75), 0 0 12px rgba(255, 0, 51, 0.18);
+  animation: news-section-pulse 2s ease-in-out infinite;
+}
+
+@keyframes news-section-pulse {
+  0%, 100% { box-shadow: inset 0 0 0 1px rgba(255, 0, 51, 0.55), 0 0 0 0 rgba(255, 0, 51, 0); }
+  50% { box-shadow: inset 0 0 0 1px #ff0033, 0 0 0 4px rgba(255, 0, 51, 0.16); }
+}
+
+@keyframes submenu-section-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* En Vivo resaltado */

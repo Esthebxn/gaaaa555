@@ -7,7 +7,8 @@ export default defineConfig({
   server: {
     port: parseInt(process.env.PORT || '3005'),
     host: '0.0.0.0', // Importante para Render
-    strictPort: true,
+    // Allow Vite to use the next available port when the preferred dev port is busy.
+    strictPort: false,
     allowedHosts: true
   },
   preview: {

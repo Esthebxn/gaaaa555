@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import './HamburguesaMenu.css';
 
 const HamburguesaMenu = () => {
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [submenuOpen, setSubmenuOpen] = useState(false);
@@ -127,7 +128,7 @@ const HamburguesaMenu = () => {
               </Link>
 
               {/* Submenú con toggle */}
-              <div className={`menu-link has-submenu ${submenuOpen ? 'open' : ''}`}>
+              <div className={`menu-link has-submenu ${submenuOpen ? 'open' : ''} ${location.pathname.startsWith('/actualidad') ? 'active' : ''}`}>
                 <span className="menu-icon" aria-hidden="true">📰</span>
                 <div className="menu-text">
                   <span className="menu-title">Actualidad</span>
@@ -143,10 +144,10 @@ const HamburguesaMenu = () => {
                 </button>
                 {submenuOpen && (
                   <ul className="submenu">
-                    <li><Link to="/actualidad/deportes" onClick={closeMenu} className="submenu-link">Deportes</Link></li>
-                    <li><Link to="/actualidad/musica" onClick={closeMenu} className="submenu-link">Música</Link></li>
-                    <li><Link to="/actualidad/nacionales" onClick={closeMenu} className="submenu-link">Nacionales</Link></li>
-                    <li><Link to="/actualidad/regionales" onClick={closeMenu} className="submenu-link">Regionales</Link></li>
+                    <li><Link to="/actualidad/deportes" onClick={closeMenu} className={`submenu-link ${location.pathname.startsWith('/actualidad/deportes') ? 'active' : ''}`}>Deportes</Link></li>
+                    <li><Link to="/actualidad/musica" onClick={closeMenu} className={`submenu-link ${location.pathname.startsWith('/actualidad/musica') ? 'active' : ''}`}>Música</Link></li>
+                    <li><Link to="/actualidad/nacionales" onClick={closeMenu} className={`submenu-link ${location.pathname.startsWith('/actualidad/nacionales') ? 'active' : ''}`}>Nacionales</Link></li>
+                    <li><Link to="/actualidad/regionales" onClick={closeMenu} className={`submenu-link ${location.pathname.startsWith('/actualidad/regionales') ? 'active' : ''}`}>Regionales</Link></li>
                   </ul>
                 )}
               </div>
@@ -195,4 +196,4 @@ const HamburguesaMenu = () => {
 };
 
 export default HamburguesaMenu;
- 
+

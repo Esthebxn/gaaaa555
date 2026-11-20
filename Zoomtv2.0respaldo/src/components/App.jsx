@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 import Header from "./Header/Header";
@@ -20,6 +20,16 @@ import Anunciantes from "../pages/Anunciantes/Anunciantes";
 import Live9 from "../pages/Live9/Live9";
 import ZoomApp from "../pages/ZoomApp/ZoomApp";
 
+function ScrollToRouteContent() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }, [pathname]);
+
+  return null;
+}
+
 function App() {
   const [isLoading, setIsLoading] = useState(true);
 
@@ -40,6 +50,7 @@ function App() {
     <Router>
       <div className="app">
         <Header /> {/* ✅ HamburguesaMenu ya está dentro del Header */}
+        <ScrollToRouteContent />
         <Routes>
           <Route index element={<Inicio />} />
           <Route path="/inicio" element={<Inicio />} />

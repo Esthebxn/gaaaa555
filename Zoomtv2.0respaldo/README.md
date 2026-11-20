@@ -135,7 +135,7 @@ Las tablas `assistant_faq` y `assistant_social_links` también se crean automát
 
 ## Zoom TV Assistant (chatbot)
 
-El asistente responde mediante reglas de intención y palabras clave, consultando el contenido publicado en MySQL. **No es un modelo de inteligencia artificial entrenado con aprendizaje automático ni genera respuestas libres**: su conocimiento se configura con preguntas frecuentes y se complementa con los datos actuales de las tablas del sitio.
+El asistente detecta la intención y consulta el contenido publicado en MySQL. Cuando `GEMINI_ENABLED=true` y se configura `GEMINI_API_KEY` en el backend, Gemini puede clasificar preguntas y redactar respuestas con los datos consultados; de forma predeterminada, las respuestas se generan localmente con las reglas del asistente. Las tarjetas de noticias y acciones siguen viniendo de la API del sitio.
 
 ### Cómo está configurado
 
@@ -180,6 +180,7 @@ La API del chat recibe `POST /api/assistant/chat` con JSON como `{ "message": "�
 - **Base local:** `zoomtv_db` en MySQL/MariaDB, normalmente en `127.0.0.1:3306`.
 - **API local:** `http://localhost:3000/api`; el frontend usa `VITE_API_URL` para encontrarla.
 - **Credenciales de MySQL:** se configuran solamente en `backend/.env` mediante `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME=zoomtv_db`.
+- **Gemini:** para activarlo se requieren `GEMINI_ENABLED=true` y `GEMINI_API_KEY` en `backend/.env` o en los secretos del hosting. La clave nunca va en una variable `VITE_`. El backend usa `gemini-3.5-flash-lite` cuando Gemini est? habilitado y recurre a las respuestas locales si el servicio no responde.
 - **Esquema SQL:** se encuentra en `backend/database/schema.sql` dentro del proyecto del backend. El backend también crea las tablas del chatbot si todavía no existen.
 
 No guardes contraseñas en este repositorio ni en variables `VITE_`: esas variables se incluyen en el código que recibe el navegador.

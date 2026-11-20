@@ -45,10 +45,10 @@ const Navbar = () => {
               Actualidad
             </Link>
             <div className="zoom-dropdown-menu">
-              <Link to="/actualidad/deportes" className="zoom-dropdown-item">Deportes</Link>
-              <Link to="/actualidad/nacionales" className="zoom-dropdown-item">Nacionales</Link>
-              <Link to="/actualidad/regionales" className="zoom-dropdown-item">Regionales</Link>
-              <Link to="/actualidad/musica" className="zoom-dropdown-item">Música</Link>
+              <Link to="/actualidad/deportes" className={`zoom-dropdown-item ${isActive('/actualidad/deportes') ? 'active' : ''}`}>Deportes</Link>
+              <Link to="/actualidad/nacionales" className={`zoom-dropdown-item ${isActive('/actualidad/nacionales') ? 'active' : ''}`}>Nacionales</Link>
+              <Link to="/actualidad/regionales" className={`zoom-dropdown-item ${isActive('/actualidad/regionales') ? 'active' : ''}`}>Regionales</Link>
+              <Link to="/actualidad/musica" className={`zoom-dropdown-item ${isActive('/actualidad/musica') ? 'active' : ''}`}>Música</Link>
             </div>
           </li>
 
