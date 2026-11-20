@@ -194,3 +194,304 @@ La lista completa con versiones está en `PLUGINS.md`.
 - `backend\.env` no se sube a GitHub, porque contiene contraseñas.
 - No subas los respaldos de la base de datos (`Zoomdbdatabasetodoslosmodelos.zip`).
 - Si una API key llegó a subirse al repositorio, revócala y crea una nueva.
+
+Este es el SQL completo que tiene el proyecto para crear la base `zoomtv_db`, sus tablas y los datos de ejemplo iniciales. Puedes copiarlo y ejecutarlo en MySQL:
+
+```sql
+-- Crear base de datos
+CREATE DATABASE IF NOT EXISTS zoomtv_db;
+USE zoomtv_db;
+
+-- Tabla para la sección Nosotros
+CREATE TABLE IF NOT EXISTS nosotros (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(255) NOT NULL,
+    descripcion TEXT,
+    mision TEXT,
+    vision TEXT,
+    valores TEXT,
+    imagen_url VARCHAR(500),
+    nombre_empresa VARCHAR(255),
+    slogan VARCHAR(500),
+    email VARCHAR(100),
+    telefono VARCHAR(20),
+    historia TEXT,
+    equipo TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Tabla para Noticias
+CREATE TABLE IF NOT EXISTS noticias (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(255) NOT NULL,
+    contenido TEXT NOT NULL,
+    resumen TEXT,
+    categoria VARCHAR(100),
+    autor VARCHAR(100),
+    imagen_url VARCHAR(500),
+    fecha_publicacion DATETIME,
+    destacada BOOLEAN DEFAULT FALSE,
+    activa BOOLEAN DEFAULT TRUE,
+    descripcion TEXT,
+    imagen VARCHAR(500),
+    fecha VARCHAR(50),
+    fuente VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Tabla para Programación
+CREATE TABLE IF NOT EXISTS programacion (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_programa VARCHAR(255) NOT NULL,
+    descripcion TEXT,
+    horario_inicio TIME NOT NULL,
+    horario_fin TIME NOT NULL,
+    dia_semana ENUM(
+        'Lunes',
+        'Martes',
+        'Miércoles',
+        'Jueves',
+        'Viernes',
+        'Sábado',
+        'Domingo'
+    ) NOT NULL,
+    conductor VARCHAR(100),
+    categoria VARCHAR(100),
+    activo BOOLEAN DEFAULT TRUE,
+    hora VARCHAR(20),
+    programa VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Tabla para Anunciantes
+CREATE TABLE IF NOT EXISTS anunciantes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_empresa VARCHAR(255) NOT NULL,
+    contacto VARCHAR(100),
+    telefono VARCHAR(20),
+    email VARCHAR(100),
+    direccion TEXT,
+    descripcion TEXT,
+    logo_url VARCHAR(500),
+    sitio_web VARCHAR(255),
+    activo BOOLEAN DEFAULT TRUE,
+    nombre VARCHAR(255),
+    categoria VARCHAR(100),
+    horario VARCHAR(100),
+    imagen VARCHAR(500),
+    flyer VARCHAR(500),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Tabla para transmisión en vivo
+CREATE TABLE IF NOT EXISTS live_stream (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(255) NOT NULL,
+    url_stream VARCHAR(500) NOT NULL,
+    descripcion TEXT,
+    activo BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Preguntas frecuentes de Zoom TV Assistant
+CREATE TABLE IF NOT EXISTS assistant_faq (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    pregunta VARCHAR(500) NOT NULL,
+    categoria VARCHAR(80) NOT NULL,
+    palabras_clave TEXT,
+    respuesta TEXT,
+    activa BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_assistant_faq_question (pregunta(191))
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- Redes sociales de Zoom TV Assistant
+CREATE TABLE IF NOT EXISTS assistant_social_links (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    plataforma VARCHAR(80) NOT NULL UNIQUE,
+    url VARCHAR(1000) NOT NULL,
+    activa BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- Datos de ejemplo para Nosotros
+INSERT INTO nosotros (
+    titulo,
+    descripcion,
+    mision,
+    vision,
+    valores,
+    nombre_empresa,
+    slogan,
+    email,
+    telefono,
+    historia
+) VALUES (
+    'ZoomTV',
+    'Somos una televisora local comprometida con la comunidad',
+    'Informar, entretener y educar a nuestra audiencia con contenido de calidad',
+    'Ser la televisora líder en nuestra región',
+    'Transparencia, compromiso, innovación y servicio a la comunidad',
+    'Zoom TV Canal 10',
+    'Información veraz, entretenimiento de calidad',
+    'contacto@zoomtvcanal10.com',
+    '+51 999 888 777',
+    'Zoom TV Canal 10 nació en 2005 con la misión de llevar información veraz y entretenimiento de calidad a nuestros televidentes. Hoy contamos con más de 50 profesionales dedicados a la producción de contenido audiovisual de alta calidad.'
+);
+
+-- Datos de ejemplo para Noticias
+INSERT INTO noticias (
+    titulo,
+    contenido,
+    resumen,
+    categoria,
+    autor,
+    destacada,
+    descripcion,
+    imagen,
+    fecha,
+    fuente
+) VALUES
+(
+    '🚧 Intervendrán 27 puntos críticos de la Carretera Central desde este lunes',
+    'El Ministerio de Transportes y Comunicaciones (MTC) informó que se intervendrán 27 puntos críticos en la Carretera Central para garantizar la seguridad vial durante la temporada de lluvias. Estas labores incluirán la estabilización de taludes, limpieza de derrumbes y mejoramiento de la capa asfáltica. La primera etapa abarcará desde Huachipa hasta Matucana, con la participación del Ejército Peruano y Provías Nacional.',
+    'El Ministerio de Transportes y Comunicaciones (MTC) informó que se intervendrán 27 puntos críticos en la Carretera Central para garantizar la seguridad vial durante la temporada de lluvias.',
+    'Nacionales',
+    'Redacción ZoomTV',
+    TRUE,
+    'El Ministerio de Transportes y Comunicaciones (MTC) informó que se intervendrán 27 puntos críticos en la Carretera Central para garantizar la seguridad vial durante la temporada de lluvias. Estas labores incluirán la estabilización de taludes, limpieza de derrumbes y mejoramiento de la capa asfáltica.',
+    'carretera_central.jpg',
+    '03 octubre 2025',
+    'Andina.pe'
+),
+(
+    '⚽ Perú derrota 2-0 a Ecuador en amistoso internacional',
+    'Perú venció a Ecuador 2-0 en un amistoso jugado en Lima. Lapadula abrió el marcador al minuto 23 tras una gran jugada colectiva, mientras que Cueva cerró el encuentro con un golazo desde fuera del área. El equipo dirigido por Fossati se mostró sólido y con mayor orden táctico.',
+    'Perú venció a Ecuador 2-0 en un amistoso jugado en Lima. Lapadula abrió el marcador al minuto 23 tras una gran jugada colectiva.',
+    'Deportes',
+    'Reportero Deportivo',
+    FALSE,
+    'Perú venció a Ecuador 2-0 en un amistoso jugado en Lima. Lapadula abrió el marcador al minuto 23 tras una gran jugada colectiva, mientras que Cueva cerró el encuentro con un golazo desde fuera del área.',
+    'peru_ecuador.jpg',
+    '03 octubre 2025',
+    'Depor.pe'
+);
+
+-- Datos de ejemplo para Programación
+INSERT INTO programacion (
+    nombre_programa,
+    descripcion,
+    horario_inicio,
+    horario_fin,
+    dia_semana,
+    conductor,
+    categoria,
+    hora,
+    programa
+) VALUES
+(
+    'Despertar Contigo',
+    'Programa matutino con noticias, música y entrevistas',
+    '06:00:00',
+    '07:00:00',
+    'Lunes',
+    'María González',
+    'Entretenimiento',
+    '06:00 AM',
+    'Despertar Contigo'
+),
+(
+    'Noticias del Día',
+    'Resumen de las noticias más importantes de la mañana',
+    '09:00:00',
+    '10:00:00',
+    'Lunes',
+    'Carlos López',
+    'Noticias',
+    '09:00 AM',
+    'Noticias del Día'
+),
+(
+    'Al Mediodía',
+    'Programa de variedades con cocina en vivo y música',
+    '12:00:00',
+    '13:00:00',
+    'Lunes',
+    'Laura Jiménez',
+    'Variedades',
+    '12:00 PM',
+    'Al Mediodía'
+),
+(
+    'Deportes en Acción',
+    'Resumen deportivo con análisis y entrevistas',
+    '17:00:00',
+    '18:00:00',
+    'Lunes',
+    'Roberto Sánchez',
+    'Deportes',
+    '05:00 PM',
+    'Deportes en Acción'
+);
+
+-- Datos de ejemplo para Anunciantes
+INSERT INTO anunciantes (
+    nombre_empresa,
+    contacto,
+    telefono,
+    email,
+    descripcion,
+    nombre,
+    categoria,
+    horario,
+    imagen,
+    flyer
+) VALUES
+(
+    'Restaurante La Tradición',
+    'Juan Pérez',
+    '+51 987 654 321',
+    'contacto@latradicion.com',
+    'Los mejores sabores de la cocina peruana en un ambiente acogedor y familiar. Especialistas en comida criolla y mariscos frescos.',
+    'Restaurante La Tradición',
+    'Gastronomía',
+    'Lun-Dom: 12:00 PM - 11:00 PM',
+    'restaurante_tradicion.jpg',
+    'flyer_restaurante.jpg'
+),
+(
+    'AutoServicio Rápido',
+    'Ana Martínez',
+    '+51 955 444 333',
+    'info@autoservicio.com',
+    'Taller mecánico especializado en mantenimiento preventivo y correctivo de vehículos. Servicio rápido y garantizado.',
+    'AutoServicio Rápido',
+    'Automotriz',
+    'Lun-Sáb: 8:00 AM - 6:00 PM',
+    'autoservicio_rapido.jpg',
+    'flyer_autoservicio.jpg'
+);
+
+-- Datos de ejemplo para transmisión en vivo
+INSERT INTO live_stream (
+    titulo,
+    url_stream,
+    descripcion,
+    activo
+) VALUES (
+    'Zoom TV Live Stream',
+    'https://player.kick.com/elmacarius?hideHeader=true&hideChat=true',
+    'Transmisión en vivo de Zoom TV Canal 10',
+    TRUE
+);
+```
+
+Este es el SQL de esquema y ejemplos que está en el proyecto. Las noticias y anunciantes adicionales se cargan desde un script JavaScript aparte; no están guardados como SQL en el repositorio.
+
