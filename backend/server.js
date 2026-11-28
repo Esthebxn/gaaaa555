@@ -24,7 +24,10 @@ const db = mysql.createPool({
   ...(process.env.DB_SSL === 'true' ? { ssl: { rejectUnauthorized: false } } : {})
 });
 
-const allowedOrigins = (process.env.CORS_ORIGINS || '')
+// Keep the production site usable when the host has not yet received its
+// CORS_ORIGINS setting. Set CORS_ORIGINS to override this allowlist.
+const defaultOrigins = ['https://zoomtv-web.vercel.app'];
+const allowedOrigins = (process.env.CORS_ORIGINS || defaultOrigins.join(','))
   .split(',').map((origin) => origin.trim()).filter(Boolean);
 if (process.env.NODE_ENV !== 'production') {
   allowedOrigins.push('http://localhost:3002', 'http://localhost:3005');
