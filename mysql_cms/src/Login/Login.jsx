@@ -1,22 +1,34 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { BarChart3, User, LogIn } from 'lucide-react';
-import { checkCredentials, setAuthenticated } from './authConfig';
+import { BarChart3, User, LogIn, KeyRound } from 'lucide-react';
+import { API_URL } from '../services/api';
+import { setAuthenticated } from './authConfig';
 import './Login.css';
 
 const Login = ({ onLogin }) => {
   const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (checkCredentials(username)) {
-      setAuthenticated();
+    setSubmitting(true);
+    try {
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.token) throw new Error(result.error || 'No fue posible iniciar sesión.');
+      setAuthenticated(result.token);
       setError('');
       onLogin();
-    } else {
-      setError('Ingresa un usuario');
+    } catch (err) {
+      setError(err.message || 'No fue posible iniciar sesión.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -47,8 +59,17 @@ const Login = ({ onLogin }) => {
                 className="form-input"
                 placeholder="admin"
                 autoFocus
+                autoComplete="username"
                 required
               />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>Contraseña</label>
+            <div className="login-input-wrapper">
+              <KeyRound className="login-input-icon" />
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="form-input" autoComplete="current-password" required />
             </div>
           </div>
 
@@ -56,7 +77,7 @@ const Login = ({ onLogin }) => {
 
           <button type="submit" className="primary-btn login-submit">
             <LogIn className="icon" />
-            Ingresar
+            {submitting ? 'Verificando…' : 'Ingresar'}
           </button>
         </form>
       </motion.div>

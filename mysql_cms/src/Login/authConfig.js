@@ -1,28 +1,26 @@
-// Acceso al panel de administración.
-// El CMS no tiene backend (ver src/data/*), así que este login es solo una
-// puerta de acceso local: no es un mecanismo de seguridad real, cualquiera
-// con acceso al código puede verlo. No hay contraseña fija: basta con
-// ingresar un nombre de usuario.
-const SESSION_KEY = 'zoomtv_cms_session';
-
-export const checkCredentials = (username) => {
-  return username.trim().length > 0;
-};
+const SESSION_KEY = 'zoomtv_cms_token';
 
 export const isAuthenticated = () => {
   try {
-    return localStorage.getItem(SESSION_KEY) === 'true';
+    const token = localStorage.getItem(SESSION_KEY);
+    if (!token) return false;
+    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+    return Number(payload.exp) > Math.floor(Date.now() / 1000);
   } catch {
     return false;
   }
 };
 
-export const setAuthenticated = () => {
+export const getAuthToken = () => {
   try {
-    localStorage.setItem(SESSION_KEY, 'true');
+    return localStorage.getItem(SESSION_KEY);
   } catch {
-    // localStorage no disponible (modo privado, etc.) - la sesión no persiste
+    return null;
   }
+};
+
+export const setAuthenticated = (token) => {
+  localStorage.setItem(SESSION_KEY, token);
 };
 
 export const clearAuthenticated = () => {

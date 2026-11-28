@@ -112,6 +112,36 @@ cd ..\mysql_cms; npm run build
 
 Genera la carpeta `dist` de cada proyecto.
 
+## 10. Publicar web, dashboard y API
+
+La web y el dashboard usan la misma API (`VITE_API_URL`) y el backend usa la misma base de datos MySQL. No configures el navegador para conectarse directamente a MySQL.
+
+### Base de datos
+
+1. Crea una base MySQL accesible desde el backend publicado. Usa `zoomtv_db` o cambia `DB_NAME` para que coincida.
+2. Importa `backend/database/schema.sql` en la base. Si tienes un respaldo completo con los datos actuales, importa ese respaldo en vez del esquema de ejemplo.
+3. Conserva el host, puerto, usuario, contraseña y si el proveedor exige SSL.
+
+### Backend
+
+1. Crea un servicio Railway conectado a este repositorio y configura `backend` como Root Directory.
+2. Usa `npm start` como comando de inicio.
+3. Carga en Railway `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_SSL`, `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `JWT_SECRET` y `CORS_ORIGINS`. Configura `GEMINI_API_KEY` solo si habilitas Gemini. Genera un `JWT_SECRET` aleatorio, largo y único; no copies los valores de ejemplo.
+4. Genera el dominio público de la API y abre `/api/health`. Debe responder `status: ok` y `database: connected`.
+5. Las subidas se guardan en `UPLOADS_DIR`. Para Railway, monta un volumen en `/app/uploads` y configura `UPLOADS_DIR=/app/uploads`. Sin almacenamiento persistente, las imágenes nuevas pueden perderse al reemplazar el servicio.
+
+### Vercel
+
+Despliega dos proyectos desde el mismo repo. Para la web usa Root Directory `Zoomtv2.0respaldo`; para el dashboard usa `mysql_cms`. En ambos selecciona Vite, Build Command `npm run build`, Output Directory `dist`, y configura `VITE_API_URL=https://TU-DOMINIO-API/api`. Cada carpeta contiene `vercel.json` para que funcionen las rutas al recargar.
+
+Después de obtener los dos dominios de Vercel, asigna `CORS_ORIGINS` en Railway con ambos orígenes exactos, separados por coma y sin barra final. Vuelve a desplegar el backend para aplicar el cambio.
+
+### Acceso y comprobación
+
+El login del dashboard consulta `POST /api/auth/login`. Crea `ADMIN_USERNAME` y `ADMIN_PASSWORD` como variables secretas en Railway. El backend entrega un token firmado que el dashboard envía al crear, editar, borrar o subir archivos. Todas las escrituras de la API requieren ese token; las lecturas y el endpoint público del chatbot siguen disponibles.
+
+Prueba iniciar sesión en el dashboard, crear una noticia y verla en la web. Revisa las imágenes y abre directamente una ruta interna de la web, luego recárgala. Para desarrollo local crea `.env.local` dentro de cada frontend con `VITE_API_URL=http://localhost:3000/api`.
+
 <!-- PLUGINS:START -->
 ## Plugins y extensiones
 

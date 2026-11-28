@@ -3,10 +3,13 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 const path = require('path');
+const { requireAdmin, login } = require('./middleware/adminAuth');
 require('dotenv').config();
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
+const uploadDir = process.env.UPLOADS_DIR || path.join(__dirname, 'uploads');
 const db = mysql.createPool({
   host: process.env.DB_HOST || '127.0.0.1',
   user: process.env.DB_USER,
@@ -21,12 +24,31 @@ const db = mysql.createPool({
   ...(process.env.DB_SSL === 'true' ? { ssl: { rejectUnauthorized: false } } : {})
 });
 
-app.use(cors());
+const allowedOrigins = (process.env.CORS_ORIGINS || '')
+  .split(',').map((origin) => origin.trim()).filter(Boolean);
+if (process.env.NODE_ENV !== 'production') {
+  allowedOrigins.push('http://localhost:3002', 'http://localhost:3005');
+}
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(null, false);
+  }
+}));
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(uploadDir));
 
 global.db = db;
+
+app.post('/api/auth/login', login);
+// Public reads and the public chatbot remain available. All other API writes
+// require a valid admin bearer token.
+app.use('/api', (req, res, next) => {
+  if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) return next();
+  if (req.method === 'POST' && req.path === '/assistant/chat') return next();
+  return requireAdmin(req, res, next);
+});
 
 app.use('/api/nosotros', require('./routes/nosotros'));
 app.use('/api/noticias', require('./routes/noticias'));
@@ -42,7 +64,7 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', database: 'connected' });
   });
 });
-const server = app.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));
+const server = app.listen(PORT, '0.0.0.0', () => console.log(`Servidor escuchando en el puerto ${PORT}`));
 server.on('error', (err) => {
   if (err.code === 'EADDRINUSE') {
     console.error(`El puerto ${PORT} ya está en uso. Cierra la instancia anterior de la API antes de iniciar otra.`);
